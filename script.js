@@ -320,7 +320,7 @@ const CMN322_CHALLENGES = [
         title: 'Standard Deviation Calculation',
         description: 'Statistical analysis with Python',
         problem: 'Write Python code to calculate standard deviation:\ndata = [2, 4, 6, 8, 10]\nUse the statistics module and print the result rounded to 2 decimal places.',
-        expectedOutput: '2.83',
+        expectedOutput: '3.16',
         flag: 'spread_measurement',
         hint: 'import statistics; use stdev() and round()'
     },
@@ -843,6 +843,7 @@ window.addEventListener('load', () => {
     typesetMath(); // Initial MathJax typesetting
 
 });
+
 
 
 
