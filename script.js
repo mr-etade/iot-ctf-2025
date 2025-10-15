@@ -377,7 +377,7 @@ const CMN322_CHALLENGES = [
         problem: 'Write Python code to normalize data to 0-1 range:\nvalues = [10, 20, 30, 40, 50]\nUse min-max formula and print the normalized list.',
         expectedOutput: '[0.0, 0.25, 0.5, 0.75, 1.0]',
         flag: 'min_max_scaling',
-        hint: '(x - min) / (max - min)'
+        hint: '\\(\\frac{(x - min)}{(max - min)}\\)'
     },
     {
         id: 25,
@@ -843,5 +843,6 @@ window.addEventListener('load', () => {
     typesetMath(); // Initial MathJax typesetting
 
 });
+
 
 
