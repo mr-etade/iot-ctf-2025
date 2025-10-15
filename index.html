@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMN322 IoT CTF Event 2025</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-icon">📡</div>
+            <h1>CMN322 IoT CTF Event 2025</h1>
+            <p class="subtitle">Western Pacific University - Semester 2, 2025</p>
+        </header>
+
+        <main>
+            <div class="welcome-section">
+                <h2>Welcome to the Internet of Things Capture The Flag Event!</h2>
+                <p>Test your IoT knowledge across networking, Big Data analytics, machine learning, and Python programming covered this semester.</p>
+                <p class="instructions">Click below to begin your challenges:</p>
+            </div>
+
+            <div class="class-selection">
+                <div class="class-card" onclick="if(authenticateClass('CMN322')) window.location.href='cmn322.html'">
+                    <div class="card-icon">🌐</div>
+                    <h3>CMN322</h3>
+                    <p>Internet of Things (IoT)</p>
+                    <div class="challenge-count">40 Challenges</div>
+                    <div class="topics-preview">
+                        <span class="topic-tag">IoT Architecture</span>
+                        <span class="topic-tag">Big Data</span>
+                        <span class="topic-tag">Machine Learning</span>
+                        <span class="topic-tag">Python Programming</span>
+                    </div>
+                    <button class="btn btn-primary">Enter CMN322 CTF</button>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>📋 How It Works</h3>
+                <ol>
+                    <li>Click on CMN322 to access the challenges</li>
+                    <li>Solve IoT challenges (Easy, Medium, Hard)</li>
+                    <li>For coding challenges, write Python code using the built-in editor</li>
+                    <li>Enter your answer or run your code to reveal the flag</li>
+                    <li>Submit the flag on <a href="https://mr-etade.ctfd.io/challenges" target="_blank">mr-etade.ctfd.io</a></li>
+                    <li>Earn points and climb the leaderboard</li>
+                </ol>
+
+                <div class="flag-format">
+                    <h4>Flag Format:</h4>
+                    <code>CMN322{your_captured_flag}</code>
+                </div>
+            </div>
+
+            <div class="topics-covered">
+                <h3>📚 Topics Covered</h3>
+                <div class="topic-grid">
+                    <div class="topic">IoT Fundamentals</div>
+                    <div class="topic">Cisco 6 Pillars</div>
+                    <div class="topic">Sensors & Actuators</div>
+                    <div class="topic">Control Systems</div>
+                    <div class="topic">Big Data (4Vs)</div>
+                    <div class="topic">Data Analytics</div>
+                    <div class="topic">Python Programming</div>
+                    <div class="topic">Machine Learning (k-NN)</div>
+                    <div class="topic">Data Visualization</div>
+                    <div class="topic">Smart Cities</div>
+                    <div class="topic">IoT Security</div>
+                    <div class="topic">Cloud & Fog Computing</div>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <h3>✨ Special Features</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🐍</div>
+                        <h4>Python Code Challenges</h4>
+                        <p>Write and execute Python code directly in the browser using Pyodide</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💡</div>
+                        <h4>Hint System</h4>
+                        <p>Stuck? Every challenge includes helpful hints to guide you</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h4>Progressive Difficulty</h4>
+                        <p>Start with Easy challenges and work your way up to Hard</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h4>Instant Feedback</h4>
+                        <p>Get immediate results and capture flags in real-time</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Prepared by: Mr. Eremas Tade | Week 15, 2025</p>
+            <p>CMN322 - Internet of Things</p>
+            <p class="footer-links">
+                <a href="https://mr-etade.ctfd.io" target="_blank">CTFd Platform</a> • 
+                <a href="mailto:eremas.tade@wpu.edu.pg">Contact</a>
+            </p>
+            <p class="good-luck">Good luck! 🎯</p>
+        </footer>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Initialize authentication
+        const CLASS_PASSWORDS = {
+            'CMN322': 'cmn322_iot_2025'
+        };
+
+        function authenticateClass(className) {
+            // Check if already authenticated
+            const authData = JSON.parse(sessionStorage.getItem(`auth_${className}`) || '{}');
+            if (authData.authenticated) {
+                return true;
+            }
+            
+            // Prompt for password
+            const password = prompt(`Enter password for ${className}:`);
+            if (password === CLASS_PASSWORDS[className]) {
+                sessionStorage.setItem(`auth_${className}`, JSON.stringify({
+                    authenticated: true,
+                    timestamp: Date.now()
+                }));
+                return true;
+            } else {
+                alert('Incorrect password! Contact your instructor.');
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

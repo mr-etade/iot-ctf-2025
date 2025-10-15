@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMN322 IoT CTF Challenges</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Load Pyodide for Python execution in browser -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Back to Main Page Link -->
+        <a href="index.html" class="back-link">← Back to Main</a>
+        
+        <!-- Header Section -->
+        <header>
+            <div class="header-icon">🌐</div>
+            <h1>CMN322 IoT CTF Challenges</h1>
+            <p class="subtitle">Internet of Things - 40 Challenges</p>
+            
+            <!-- Pyodide Loading Status -->
+            <div id="pyodide-status" class="pyodide-status">
+                <span class="loading-spinner"></span>
+                Loading Python environment...
+            </div>
+        </header>
+
+        <!-- Challenge Statistics -->
+        <div class="info-section">
+            <h3>📊 Challenge Overview</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🟢</div>
+                    <h4>Easy Challenges</h4>
+                    <p>10 challenges - 3 coding + 7 theory</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🟡</div>
+                    <h4>Medium Challenges</h4>
+                    <p>20 challenges - 8 coding + 12 theory</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔴</div>
+                    <h4>Hard Challenges</h4>
+                    <p>10 challenges - 5 coding + 5 theory</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🐍</div>
+                    <h4>Python Challenges</h4>
+                    <p>16 coding challenges with live execution</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Difficulty Filter Tabs -->
+        <div class="difficulty-tabs">
+            <button class="tab-btn active" onclick="filterChallenges('all')">
+                All Challenges (40)
+            </button>
+            <button class="tab-btn" onclick="filterChallenges('easy')">
+                🟢 Easy (10)
+            </button>
+            <button class="tab-btn" onclick="filterChallenges('medium')">
+                🟡 Medium (20)
+            </button>
+            <button class="tab-btn" onclick="filterChallenges('hard')">
+                🔴 Hard (10)
+            </button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="alert alert-info">
+            <strong>ℹ️ How to Solve Challenges:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li><strong>Theory Questions:</strong> Type your answer and click "Submit"</li>
+                <li><strong>Python Challenges:</strong> Write code in the editor and click "Run Code"</li>
+                <li><strong>Get Flags:</strong> Correct answers reveal flags in format <code>CMN322{flag_name}</code></li>
+                <li><strong>Submit Flags:</strong> Copy flags to <a href="https://mr-etade.ctfd.io/challenges" target="_blank">mr-etade.ctfd.io</a></li>
+            </ul>
+        </div>
+
+        <!-- Challenges Container (Populated by JavaScript) -->
+        <div id="challengesContainer" class="challenges-grid">
+            <!-- Challenges will be dynamically inserted here by script.js -->
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                <div class="loading"></div>
+                <p style="margin-top: 20px;">Loading challenges...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Authentication check on load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkClassAuth('CMN322')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            console.log('✅ Authentication verified - Loading challenges...');
+            initializeChallenges('CMN322');
+        });
+
+        // Progress tracking
+        function updateProgressStats() {
+            const solvedKey = 'CMN322_solved';
+            const solved = JSON.parse(localStorage.getItem(solvedKey) || '[]');
+            const total = CMN322_CHALLENGES.length;
+            const percentage = Math.round((solved.length / total) * 100);
+            
+            console.log(`📊 Progress: ${solved.length}/${total} (${percentage}%)`);
+        }
+
+        // Update progress on page load
+        window.addEventListener('load', function() {
+            setTimeout(updateProgressStats, 1000);
+        });
+
+        // Optional: Scroll to challenge on hash
+        window.addEventListener('load', function() {
+            if (window.location.hash) {
+                const challengeId = window.location.hash.replace('#', '');
+                const card = document.getElementById(`card-${challengeId}`);
+                if (card) {
+                    setTimeout(() => {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        card.style.animation = 'glow 2s ease-in-out';
+                    }, 500);
+                }
+            }
+        });
+
+        // Optional: Warn before leaving if code is written
+        window.addEventListener('beforeunload', function(e) {
+            const codeEditors = document.querySelectorAll('.code-editor');
+            let hasCode = false;
+            
+            codeEditors.forEach(editor => {
+                if (editor.value.trim().length > 20) {
+                    hasCode = true;
+                }
+            });
+            
+            if (hasCode) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved code. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+
+        // Auto-save code to localStorage (optional enhancement)
+        function setupAutoSave() {
+            const codeEditors = document.querySelectorAll('.code-editor');
+            
+            codeEditors.forEach(editor => {
+                const challengeId = editor.id.replace('code-', '');
+                
+                // Load saved code
+                const savedCode = localStorage.getItem(`CMN322_code_${challengeId}`);
+                if (savedCode) {
+                    editor.value = savedCode;
+                }
+                
+                // Auto-save on input
+                editor.addEventListener('input', function() {
+                    localStorage.setItem(`CMN322_code_${challengeId}`, editor.value);
+                });
+            });
+        }
+
+        // Setup auto-save after challenges load
+        window.addEventListener('load', function() {
+            setTimeout(setupAutoSave, 2000);
+        });
+
+        // Optional: Share button for individual challenges
+        function shareChallenge(challengeId) {
+            const url = `${window.location.origin}${window.location.pathname}#${challengeId}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `CMN322 Challenge #${challengeId}`,
+                    text: 'Check out this IoT CTF challenge!',
+                    url: url
+                }).catch(err => console.log('Share failed', err));
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Challenge link copied to clipboard!');
+                });
+            }
+        }
+
+        // Log page load time
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            console.log(`⚡ Page loaded in ${Math.round(loadTime)}ms`);
+        });
+
+        // Optional: Track time spent on page
+        let startTime = Date.now();
+        window.addEventListener('beforeunload', function() {
+            const timeSpent = Math.round((Date.now() - startTime) / 1000 / 60);
+            console.log(`⏱️ Time spent: ${timeSpent} minutes`);
+        });
+    </script>
+</body>
+</html>
