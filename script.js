@@ -253,7 +253,7 @@ const CMN322_CHALLENGES = [
         type: 'coding',
         title: 'k-NN Distance Calculation',
         description: 'Calculate Euclidean distance',
-        problem: 'Write Python code to calculate Euclidean distance between two points:\npoint1 = (0, 0)\npoint2 = (3, 4)\nUse the formula: \( \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} \)\nPrint the result.',
+        problem: 'Write Python code to calculate Euclidean distance between two points:\npoint1 = \\((0, 0)\\)\npoint2 = \\((3, 4)\\)\nUse the formula: \\( \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} \\)\nPrint the result.',
         expectedOutput: '5.0',
         flag: 'euclidean_distance',
         hint: 'Import math module for sqrt()'
@@ -300,7 +300,7 @@ const CMN322_CHALLENGES = [
         problem: 'In Hamburg smart city, what percentage reduction in energy consumption was achieved through smart building systems?',
         answer: '25',
         flag: 'energy_efficiency_gain',
-        hint: 'It\'s a quarter of the original consumption'
+        hint: "Hamburg's buildings got a smart upgrade that would make any energy bill smile. Check the 'IoT Applications in Business (Part 2)' slides to see just how much they saved."
     },
     {
         id: 18,
@@ -843,4 +843,5 @@ window.addEventListener('load', () => {
     typesetMath(); // Initial MathJax typesetting
 
 });
+
 
