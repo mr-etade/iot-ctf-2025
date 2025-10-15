@@ -122,7 +122,7 @@ const CMN322_CHALLENGES = [
         problem: 'How many pillars are in the Cisco IoT System architecture framework?',
         answer: '6',
         flag: 'six_pillars_foundation',
-        hint: 'Network Connectivity, Fog Computing, Security, Data Analytics, Management and Automation, Application Enablement Platform'
+        hint: "When Cisco builds an IoT house, they don't use 4 walls or 5 – they use something more complete. Check the 'Fundamentals of IoT - CONNECTING THINGS' slides to count the architectural supports."
     },
     {
         id: 2,
@@ -155,7 +155,7 @@ const CMN322_CHALLENGES = [
         problem: 'How many gigabits (Gb) of data does ONE autonomous vehicle generate per day?',
         answer: '4000',
         flag: 'massive_vehicle_data',
-        hint: 'It\'s in the thousands!'
+        hint: "This car's data appetite is huge. Check the 'Fundamentals of IoT - Everything Generates Data' slides to see just how many gigabits it feasts on daily."
     },
     {
         id: 5,
@@ -841,4 +841,5 @@ window.addEventListener('load', () => {
     updateRunButtons();
     setupTabIndentation();
     typesetMath(); // Initial MathJax typesetting
+
 });
