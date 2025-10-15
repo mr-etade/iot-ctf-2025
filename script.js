@@ -185,10 +185,10 @@ const CMN322_CHALLENGES = [
         type: 'theory',
         title: 'Statistical Measure',
         description: 'Basic data analysis',
-        problem: 'Calculate the mean of these sensor readings: 20, 22, 24, 26, 28',
+        problem: 'Calculate the median of these sensor readings: 22, 20, 28, 26, 24',
         answer: '24',
-        flag: 'average_calculation',
-        hint: 'Sum all values and divide by count'
+        flag: 'median_calculation',
+        hint: "When in doubt, line 'em up and find the middle child. Check the 'Fundamentals of Data Analysis' slides for the secret to this central position."
     },
     {
         id: 8,
@@ -199,7 +199,7 @@ const CMN322_CHALLENGES = [
         problem: 'How many security planes are there in IoT security architecture?',
         answer: '3',
         flag: 'three_layer_security',
-        hint: 'Control, Data, and Management'
+        hint: "Securing IoT is a three-act play, not a solo show. Check the 'IoT Applications in Business (Part 1)' slides to meet all the characters."
     },
     {
         id: 9,
@@ -221,7 +221,7 @@ const CMN322_CHALLENGES = [
         problem: 'What lightweight protocol is specifically designed for IoT devices? (4 letters, uppercase)',
         answer: 'MQTT',
         flag: 'message_queue_telemetry',
-        hint: 'Message Queue Telemetry Transport'
+        hint: "This protocol's name is shorter than a tweet but perfect for chatty sensors. Check the 'Fundamentals of IoT - CONNECTING THINGS' slides for this 4-letter superstar."
     },
 
     // MEDIUM CHALLENGES (20) - 8 coding, 12 theory
@@ -843,3 +843,4 @@ window.addEventListener('load', () => {
     typesetMath(); // Initial MathJax typesetting
 
 });
+
