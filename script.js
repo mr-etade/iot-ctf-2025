@@ -1,4 +1,5 @@
 // CMN322 IoT CTF - Challenge Database and Logic
+// Enhanced with Anti-Cheat Code Validation System
 
 // Global Pyodide instance
 let pyodide;
@@ -24,7 +25,7 @@ async function initPyodide() {
         
         // Small delay for UX
         setTimeout(() => {
-            statusDiv.innerHTML = '✓ Python environment ready!';
+            statusDiv.innerHTML = '✔ Python environment ready!';
             statusDiv.classList.add('ready');
         }, 500);
         
@@ -36,7 +37,7 @@ async function initPyodide() {
         console.error('Failed to load Pyodide:', error);
         statusDiv.innerHTML = '⚠ Failed to load Python environment. Check your connection and refresh.';
         statusDiv.style.color = 'var(--accent-danger)';
-        statusDiv.classList.add('error'); // Assuming CSS has .error for styling
+        statusDiv.classList.add('error');
     }
 }
 
@@ -47,7 +48,7 @@ function updateRunButtons() {
         if (pyodideReady) {
             btn.disabled = false;
             btn.textContent = '▶ Run Code';
-            btn.title = ''; // Clear any loading tooltip
+            btn.title = '';
         } else {
             btn.disabled = true;
             btn.textContent = '⏳ Loading Python...';
@@ -93,7 +94,7 @@ function handleTabKey(e) {
             const value = editor.value;
             const selectedText = value.substring(start, end);
             const lines = selectedText.split('\n');
-            const indentedLines = lines.map(line => '    ' + line); // 4 spaces
+            const indentedLines = lines.map(line => '    ' + line);
             const indentedText = indentedLines.join('\n');
             
             editor.value = value.substring(0, start) + indentedText + value.substring(end);
@@ -110,7 +111,7 @@ function handleTabKey(e) {
     }
 }
 
-// Complete Challenge Database (filled in truncated sections based on patterns)
+// Complete Challenge Database
 const CMN322_CHALLENGES = [
     // EASY CHALLENGES (10) - 3 coding, 7 theory
     {
@@ -122,7 +123,7 @@ const CMN322_CHALLENGES = [
         problem: 'How many pillars are in the Cisco IoT System architecture framework?',
         answer: '6',
         flag: 'six_pillars_foundation',
-        hint: "When Cisco builds an IoT house, they don't use 4 walls or 5 – they use something more complete. Check the 'Fundamentals of IoT - CONNECTING THINGS' slides to count the architectural supports."
+        hint: "When Cisco builds an IoT house, they don't use 4 walls or 5 — they use something more complete. Check the 'Fundamentals of IoT - CONNECTING THINGS' slides to count the architectural supports."
     },
     {
         id: 2,
@@ -319,7 +320,7 @@ const CMN322_CHALLENGES = [
         type: 'coding',
         title: 'Standard Deviation Calculation',
         description: 'Statistical analysis with Python',
-        problem: 'Write Python code to calculate standard deviation:\ndata = [2, 4, 6, 8, 10]\nUse the statistics module and print the result rounded to 2 decimal places.',
+        problem: 'Write Python code to calculate the sample standard deviation:\ndata = [2, 4, 6, 8, 10]\nUse the statistics module and print the result rounded to 2 decimal places.',
         expectedOutput: '3.16',
         flag: 'spread_measurement',
         hint: 'import statistics; use stdev() and round()'
@@ -559,21 +560,201 @@ const CMN322_CHALLENGES = [
     }
 ];
 
-// Current state
-let currentClass = '';
-let currentFilter = 'all';
-
-// Initialize challenges
-function initializeChallenges(className) {
-    currentClass = className;
+/**
+ * Enhanced Code Validation System
+ * Prevents students from cheating with simple print() statements
+ */
+function validateCode(code, challengeId, challenge) {
+    const issues = [];
+    const codeLower = code.toLowerCase().trim();
     
+    // 1. Check for direct print of expected output - only if entire code is just that
+    if (challenge.expectedOutput) {
+        const expected = challenge.expectedOutput.toString().trim();
+        const expectedLower = expected.toLowerCase();
+        const isNumeric = !isNaN(parseFloat(expected)) && isFinite(expected);
+        let directPatterns = [];
+        if (isNumeric) {
+            directPatterns = [
+                `print(${expected})`,
+                `print( ${expected} )`,
+                `print(${expectedLower})`,
+                `print( ${expectedLower} )`
+            ];
+        } else {
+            directPatterns = [
+                `print("${expected}")`,
+                `print('${expected}')`,
+                `print( "${expected}" )`,
+                `print( '${expected}' )`,
+                `print("${expectedLower}")`,
+                `print('${expectedLower}')`
+            ];
+        }
+        const codeTrimLower = codeLower.replace(/\s+/g, ' ');
+        const hasDirectPrint = directPatterns.some(pattern => {
+            const patLower = pattern.toLowerCase().replace(/\s+/g, ' ');
+            return codeTrimLower === patLower;
+        });
+        if (hasDirectPrint) {
+            issues.push({
+                type: 'hardcoded_output',
+                message: '🚫 Detected hardcoded answer. You must write code that actually solves the problem!'
+            });
+        }
+    }
+    
+    // 2. Challenge-specific validation rules
+    const validations = {
+        2: { // Temperature Sensor Reading
+            required: ['sum', 'len', 'temperatures'],
+            forbidden: ['23.1'],
+            minLength: 30
+        },
+        5: { // IoT Device Status Check
+            required: ['if', 'reading'],
+            minLength: 20
+        },
+        9: { // Smart Device Counter
+            required: ['devices', 'online'],
+            forbidden: ['print(3)'],
+            minLength: 25
+        },
+        12: { // Sensor Data Filtering
+            required: ['readings', 'for', 'if'],
+            forbidden: ['[25, 22, 28, 29]'],
+            minLength: 40
+        },
+        13: { // k-NN Distance Calculation
+            required: ['import', 'sqrt', 'math'],
+            forbidden: ['print(5.0)', 'print(5)'],
+            minLength: 50
+        },
+        15: { // IoT Data Aggregation
+            required: ['readings', 'max'],
+            forbidden: ['print(27)'],
+            minLength: 20
+        },
+        19: { // Standard Deviation
+            required: ['import', 'statistics', 'stdev'],
+            forbidden: ['print(2.83)', '2.83'],
+            minLength: 40
+        },
+        22: { // k-NN Voting
+            required: ['neighbors', 'count'],
+            minLength: 30
+        },
+        24: { // Data Normalization
+            required: ['values', 'min', 'max', 'for'],
+            forbidden: ['[0.0, 0.25, 0.5, 0.75, 1.0]'],
+            minLength: 50
+        },
+        26: { // Correlation Matrix
+            required: ['import', 'numpy', 'corrcoef'],
+            forbidden: ['print(1.0)', 'print(1)'],
+            minLength: 40
+        },
+        29: { // Time Series Smoothing
+            required: ['data', 'for', 'range'],
+            forbidden: ['[3.0, 5.0, 7.0]'],
+            minLength: 40
+        },
+        32: { // k-NN Implementation
+            required: ['train', 'test', 'sqrt', 'distance'],
+            forbidden: ['print("a")'],
+            minLength: 80
+        },
+        34: { // Anomaly Detection
+            required: ['import', 'data', 'zscore'],
+            forbidden: ['[50]', 'print([50])'],
+            minLength: 50
+        },
+        36: { // ETL Pipeline
+            required: ['data', 'for', 'if', 'sum'],
+            forbidden: ['print(40)'],
+            minLength: 40
+        },
+        38: { // ML Pipeline
+            required: ['data', 'labels', 'test', 'distance'],
+            forbidden: ['print("a")'],
+            minLength: 60
+        },
+        40: { // IoT Data Pipeline
+            required: ['data', 'none', 'for', 'sum'],
+            forbidden: ['print(200)'],
+            minLength: 40
+        }
+    };
+    
+    const rules = validations[challengeId];
+    if (rules) {
+        // Check minimum code length
+        if (code.replace(/\s+/g, '').length < rules.minLength) {
+            issues.push({
+                type: 'too_short',
+                message: `📏 Your code seems too short. Write proper logic to solve the problem (minimum ${rules.minLength} characters).`
+            });
+        }
+        
+        // Check for required elements
+        for (const required of rules.required) {
+            if (!codeLower.includes(required.toLowerCase())) {
+                issues.push({
+                    type: 'missing_required',
+                    message: `🔍 Your solution should use '${required}' to properly solve this problem.`
+                });
+            }
+        }
+        
+        // Check for forbidden shortcuts
+        if (rules.forbidden) {
+            for (const forbidden of rules.forbidden) {
+                if (codeLower.includes(forbidden.toLowerCase())) {
+                    issues.push({
+                        type: 'forbidden_shortcut',
+                        message: '⛔ You cannot hardcode the answer. Write code that calculates the result!'
+                    });
+                    break;
+                }
+            }
+        }
+    }
+    
+    // 3. General anti-cheat patterns
+    const suspiciousPatterns = [
+        /print\s*\(\s*["']?\d+\.?\d*["']?\s*\)/i, // print(number)
+        /print\s*\(\s*["'][^"']{1,30}["']\s*\)/i, // print("short string")
+    ];
+    
+    // Only flag if code is very short AND has suspicious pattern
+    if (code.replace(/\s+/g, '').length < 50) {
+        for (const pattern of suspiciousPatterns) {
+            if (pattern.test(code)) {
+                issues.push({
+                    type: 'suspicious',
+                    message: '🤔 Your code looks suspicious. Make sure you\'re actually solving the problem, not just printing an answer.'
+                });
+                break;
+            }
+        }
+    }
+    
+    return issues;
+}
+
+// Current filter (default: all)
+let currentFilter = 'all';
+let currentClass = 'CMN322';
+
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', () => {
     // Start loading Pyodide in background
     if (!pyodide) {
         initPyodide();
     }
     
     renderChallenges();
-}
+});
 
 // Filter challenges by difficulty
 function filterChallenges(difficulty) {
@@ -682,7 +863,9 @@ function renderChallenges() {
     typesetMath();
 }
 
-// Run Python code
+/**
+ * Enhanced runPythonCode with validation
+ */
 async function runPythonCode(challengeId) {
     if (!pyodideReady) {
         alert('Python environment is not ready yet. Please wait a moment or refresh the page.');
@@ -701,6 +884,28 @@ async function runPythonCode(challengeId) {
         return;
     }
     
+    // ===== NEW VALIDATION LOGIC =====
+    const validationIssues = validateCode(code, challengeId, challenge);
+    
+    if (validationIssues.length > 0) {
+        outputDiv.className = 'code-output show error';
+        resultDiv.className = 'flag-result error';
+        
+        outputDiv.textContent = '❌ Code Validation Failed';
+        resultDiv.innerHTML = `
+            <strong>⚠️ Invalid Solution Detected</strong><br>
+            <div style="margin-top: 10px; line-height: 1.8;">
+                ${validationIssues.map(issue => `• ${issue.message}`).join('<br>')}
+            </div>
+            <div style="margin-top: 15px; padding: 10px; background: var(--bg-primary); border-radius: 4px; font-size: 0.9em;">
+                <strong>Remember:</strong> You must write actual code that solves the problem. 
+                Simply printing the expected answer will not earn you the flag.
+            </div>
+        `;
+        return;
+    }
+    // ===== END VALIDATION LOGIC =====
+    
     // Safeguard against infinite loops: 5s timeout
     const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Execution timeout: Code took too long to run')), 5000);
@@ -712,7 +917,7 @@ async function runPythonCode(challengeId) {
         outputDiv.className = 'code-output show';
         outputDiv.textContent = 'Running code...';
         
-        // Set custom stdout handler (batched for line-based capture)
+        // Set custom stdout handler
         pyodide.setStdout({
             batched: (text) => {
                 output += text;
@@ -722,14 +927,14 @@ async function runPythonCode(challengeId) {
         // Run the code with timeout
         await Promise.race([pyodide.runPythonAsync(code), timeoutPromise]);
         
-        // Restore default stdout handler (empty options)
+        // Restore default stdout handler
         pyodide.setStdout({});
         
         // Display output
         output = output.trim();
         outputDiv.textContent = output || '(No output produced)';
         
-        // Check if output matches expected (trim whitespace)
+        // Check if output matches expected
         const expectedOutput = challenge.expectedOutput.trim();
         if (output === expectedOutput) {
             outputDiv.className = 'code-output show success';
@@ -739,13 +944,12 @@ async function runPythonCode(challengeId) {
             resultDiv.className = 'flag-result error';
             resultDiv.innerHTML = `
                 <strong>❌ Incorrect Output</strong><br>
-                <!--Expected: <code>${expectedOutput}</code><br>-->
                 Got: <code>${output || '(no output)'}</code><br>
-                <small>Tip: Check for exact match, including floats and lists.</small>
+                <small>Tip: Check your logic and variable names carefully.</small>
             `;
         }
     } catch (error) {
-        // Restore default stdout handler on error/timeout
+        // Restore default stdout handler on error
         try {
             pyodide.setStdout({});
         } catch (restoreError) {
@@ -842,9 +1046,31 @@ window.addEventListener('load', () => {
     setupTabIndentation();
     typesetMath(); // Initial MathJax typesetting
 
+    // Initialize challenges if not already
+    if (document.getElementById('challengesContainer')) {
+        initializeChallenges('CMN322');
+    }
 });
 
+// Initialize for specific class
+function initializeChallenges(className) {
+    currentClass = className;
+    currentFilter = 'all';
+    renderChallenges();
+    updateProgressStats();
+}
 
+// Progress tracking
+function updateProgressStats() {
+    const solvedKey = `${currentClass}_solved`;
+    const solved = JSON.parse(localStorage.getItem(solvedKey) || '[]');
+    const total = CMN322_CHALLENGES.length;
+    const percentage = Math.round((solved.length / total) * 100);
+    
+    console.log(`📊 Progress: ${solved.length}/${total} (${percentage}%)`);
+}
 
-
-
+// Export for testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { validateCode, runPythonCode };
+}
