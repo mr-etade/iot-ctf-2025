@@ -418,7 +418,7 @@ const CMN322_CHALLENGES = [
         type: 'theory',
         title: 'k-NN Parameter',
         description: 'Algorithm tuning',
-        problem: 'In k-NN, what does a higher k value tend to do? (one word, lowercase)',
+        problem: 'In k-NN, what does a higher k value tend to do to the decision boundary? (one word, lowercase)',
         answer: 'smooth',
         flag: 'decision_boundary_smooth',
         hint: "A higher k-value makes your model less jumpy and more... well-rounded. Check the 'Advanced Analytics & ML' slides on k-NN fundamentals."
@@ -843,6 +843,7 @@ window.addEventListener('load', () => {
     typesetMath(); // Initial MathJax typesetting
 
 });
+
 
 
 
